@@ -22,6 +22,13 @@ public struct ProcessRunner: Sendable {
         self.environment = ProcessInfo.processInfo.environment.merging(environment) { $1 }
     }
 
+    /// Blocking reads get their own thread: on the cooperative pool they starve the timeout watchdog when cores are few.
+    private static func readToEnd(_ handle: FileHandle) async -> Data {
+        await withCheckedContinuation { continuation in
+            Thread.detachNewThread { continuation.resume(returning: handle.readDataToEndOfFile()) }
+        }
+    }
+
     /// Kills the process and throws `ProcessTimeout` when it runs longer than `timeout`.
     public func run(
         _ executable: String, _ arguments: [String], cwd: URL, input: Data? = nil,
@@ -40,12 +47,8 @@ public struct ProcessRunner: Sendable {
         process.standardOutput = out
         process.standardError = err
 
-        // shortcut: two blocking reads on the cooperative pool, fine for a handful of git calls at once;
-        // cap git concurrency (or switch to a dedicated executor) when scans run many repos in parallel.
-        let outHandle = out.fileHandleForReading
-        let errHandle = err.fileHandleForReading
-        async let stdout = Task.detached { outHandle.readDataToEndOfFile() }.value
-        async let stderr = Task.detached { errHandle.readDataToEndOfFile() }.value
+        async let stdout = Self.readToEnd(out.fileHandleForReading)
+        async let stderr = Self.readToEnd(err.fileHandleForReading)
 
         let running = process  // only `terminate()` is called from the watchdog
         let watchdog = Task {
