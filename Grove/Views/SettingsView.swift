@@ -66,6 +66,9 @@ struct SettingsView: View {
                 Toggle("Ouvrir Grove à l'ouverture de session", isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { _, enabled in setLaunchAtLogin(enabled) }
                 if let loginError { Text(loginError).font(.caption).foregroundStyle(.red) }
+                Toggle("Démarrer dans la barre des menus", isOn: $settings.startInMenuBar)
+                Text("Au lancement, sans fenêtre ni icône dans le Dock.")
+                    .font(.caption).foregroundStyle(.secondary)
             }
 
             Section("Outils détectés") {

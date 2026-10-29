@@ -25,6 +25,9 @@ final class AppSettings {
     var explainModel: ExplainModel {
         didSet { defaults.set(explainModel.rawValue, forKey: Key.explainModel) }
     }
+    var startInMenuBar: Bool {
+        didSet { defaults.set(startInMenuBar, forKey: Key.startInMenuBar) }
+    }
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -34,6 +37,7 @@ final class AppSettings {
         menuBarLimit = Self.menuBarLimits.contains(limit) ? limit : 8
         claudeMode = defaults.string(forKey: Key.claudeMode).flatMap(ClaudeLaunchMode.init) ?? .resumeLatest
         explainModel = defaults.string(forKey: Key.explainModel).flatMap(ExplainModel.init) ?? .haiku
+        startInMenuBar = defaults.bool(forKey: Key.startInMenuBar)
     }
 
     func togglePin(_ repoPath: String) {
@@ -50,5 +54,6 @@ final class AppSettings {
         static let limit = "menuBarLimit"
         static let claudeMode = "claudeMode"
         static let explainModel = "explainModel"
+        static let startInMenuBar = "startInMenuBar"
     }
 }
