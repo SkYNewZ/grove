@@ -1,0 +1,13 @@
+.DS_Store
+.build/
+*.xcodeproj
+xcuserdata/
+DerivedData/
+build/
+.swiftpm/
+.claude/settings.local.json
+.claude/worktrees/
+CLAUDE.local.md
+Grove/Info.plist
+dist/
+.claude/skills/apple-design/

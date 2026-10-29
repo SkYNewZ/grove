@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(swift *)",
+      "Bash(xcodebuild *)",
+      "Bash(xcodegen *)",
+      "Bash(scripts/*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git commit*)"
+    ],
+    "deny": ["Bash(rm -rf*)", "Edit(.claude/skills/apple-design/**)"]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/swift-format.sh", "timeout": 15 }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop-gate.sh", "timeout": 300 }
+        ]
+      }
+    ]
+  }
+}

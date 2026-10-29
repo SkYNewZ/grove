@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Fast pre-commit: format lint on staged Swift files only (full checks live in scripts/quality-gate.sh).
+files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.swift$' || true)
+[ -z "$files" ] && exit 0
+# shellcheck disable=SC2086
+swift format lint --strict $files || { echo "pre-commit: run 'swift format -i <files>'" >&2; exit 1; }
